@@ -152,17 +152,17 @@ def start_scan(imsi_input, phone_input):
         logger.warning("No frequencies returned by scanner.")
         return
 
-    def scanning_thread():
-    	stop_event = threading.Event()
-    	while not stop_event.is_set():
-        	logger.info("[SCAN] Starting new frequency scan cycle...")
-        	for freq in frequencies:
-            		if stop_event.is_set():
-                		logger.info("IMSI found, stopping scan loop.")
-                		return
-            		scan_frequency(freq, imsi, stop_event)
-        	logger.info("[SCAN] Frequency cycle complete. Restarting in 3 seconds...")
-        	time.sleep(3)  # pause between full cycles to avoid hammering SDR
+def scanning_thread():
+    stop_event = threading.Event()
+    while not stop_event.is_set():
+        logger.info("[SCAN] Starting new frequency scan cycle...")
+        for freq in frequencies:
+            if stop_event.is_set():
+                logger.info("IMSI found, stopping scan loop.")
+                return
+            scan_frequency(freq, imsi, stop_event)
+            logger.info("[SCAN] Frequency cycle complete. Restarting in 3 seconds...")
+            time.sleep(3)  # pause between full cycles to avoid hammering SDR
 	
     threading.Thread(target=scanning_thread, daemon=True).start()
 
